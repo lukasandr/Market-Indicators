@@ -26,7 +26,7 @@ When Aroon-Up reaches 100, a new uptrend may have begun. If it remains persisten
 ### Screenshot
 ![ar example](https://user-images.githubusercontent.com/24693129/47898110-22bead80-de7d-11e8-8eae-dae8ba9c7167.png)
 
-### 3) Relative Strength Index (RSI)
+## 3) Relative Strength Index (RSI)
 
 ### How to understand this indicator
 Wilder recommended using 70 and 30 as overbought and oversold levels respectively. Generally, if the RSI rises above 30 it is considered bullish for the underlying stock. Conversely, if the RSI falls below 70, it is a bearish signal. Some traders identify the long-term trend and then use extreme readings for entry points. If the long-term trend is bullish, then oversold readings could mark potential entry points.
