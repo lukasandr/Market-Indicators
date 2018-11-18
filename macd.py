@@ -14,32 +14,7 @@ matplotlib.use('TkAgg')  # show matplotlib graph window in front of other window
 import matplotlib.pyplot as plt
 
 
-
-### 1. Data reading from file
-
-DATA_FILE_PATH = "apple.csv"
-
-df = pd.read_csv(DATA_FILE_PATH, sep=',')
-
-TIMESTAMP_NAME = "Date" # timestamp name from .csv
-PRICE_NAME = "Close" # define price name that will be used from .csv
-
-
-
-### 2. Show historic price data in the first subplot
-plt.figure(figsize=(10,5)) # change default figure size
-ax1 = plt.subplot(2, 1, 1)
-plt.plot(df[TIMESTAMP_NAME], df[PRICE_NAME])
-plt.title("NASDAQ: APPL daily MACD")
-plt.ylabel("Price, USD")
-plt.grid()
-
-frame1 = plt.gca() # hide x axis values
-frame1.axes.xaxis.set_ticklabels([])
-
-
-
-### 3. Show MACD graph in another another subplot
+# define MACD indicator calculation as function
 
 # How to understand this indicator
 # 1. Crossovers - As shown in the chart above, when the MACD falls below the signal line, it is a bearish signal,
@@ -66,19 +41,48 @@ frame1.axes.xaxis.set_ticklabels([])
 #
 # Read more: Moving Average Convergence Divergence (MACD) https://www.investopedia.com/terms/m/macd.asp#ixzz5VfwX1yUA
 
+def calculate_macd(df, PRICE_NAME, period1, period2, period3): # default MACD period values are: period1 = 26, period2 = 12, period3 = 9.
+    EMA_1 = df[PRICE_NAME].ewm(span=period1, adjust=False).mean()
+    EMA_2 = df[PRICE_NAME].ewm(span=period2, adjust=False).mean()
+    MACD_line = EMA_2 - EMA_1
+    MACD_Signal_line = MACD_line.ewm(span=period3, adjust=False).mean()
+    MACD_Histogram = MACD_line - MACD_Signal_line
+    return MACD_line, MACD_Signal_line, MACD_Histogram
 
-# MACD 26-day EMA and 12-day EMA
-EMA_26d = df[PRICE_NAME].ewm(span=26, adjust=False).mean()
-EMA_12d = df[PRICE_NAME].ewm(span=12, adjust=False).mean()
-MACD_line = EMA_12d - EMA_26d
-MACD_Signal_line = MACD_line.ewm(span=9, adjust=False).mean()
-Histogram = MACD_line - MACD_Signal_line
+
+
+### 1. Data reading from file
+
+DATA_FILE_PATH = "apple.csv"
+
+df = pd.read_csv(DATA_FILE_PATH, sep=',')
+
+TIMESTAMP_NAME = "Date" # timestamp name from .csv
+PRICE_NAME = "Close" # define price name that will be used from .csv
+
+
+
+### 2. Show historic price data in the first subplot
+plt.figure(figsize=(10,5)) # change default figure size
+ax1 = plt.subplot(2, 1, 1)
+plt.plot(df[TIMESTAMP_NAME], df[PRICE_NAME])
+plt.title("NASDAQ: APPL daily MACD")
+plt.ylabel("Price, USD")
+plt.grid()
+
+frame1 = plt.gca() # hide x axis values
+frame1.axes.xaxis.set_ticklabels([])
+
+
+
+### 3. Calculate MACD indicator and add it to subplot
+MACD_line, MACD_Signal_line, MACD_Histogram = calculate_macd(df, PRICE_NAME, 26, 12, 9) # calculating with the default MACD values
 
 # add data to subplot
 ax2 = plt.subplot(2, 1, 2, sharex = ax1)
 plt.plot(df[TIMESTAMP_NAME], MACD_line, color = 'blue')
 plt.plot(df[TIMESTAMP_NAME], MACD_Signal_line, color = 'red')
-plt.bar(df[PRICE_NAME], Histogram)
+plt.bar(df[TIMESTAMP_NAME], MACD_Histogram)
 plt.grid()
 
 frame1 = plt.gca() # hide x axis values
